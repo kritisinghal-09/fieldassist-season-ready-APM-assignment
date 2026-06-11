@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Season Ready — GT App Prototype | Kriti Singhal | FieldAssist APM</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+ 
+  body {
+    background: #0A0D1A;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: -apple-system, 'SF Pro Display', 'Segoe UI', Inter, sans-serif;
+    padding: 20px;
+  }
+ 
+  .prototype-label {
+    font-size: 12px;
+    color: #4A5178;
+    margin-bottom: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+ 
+  .prototype-label span {
+    color: #378ADD;
+  }
+ 
+  .device-shell {
+    width: 390px;
+    height: 844px;
+    background: #1A1F36;
+    border-radius: 44px;
+    overflow: hidden;
+    position: relative;
+    box-shadow:
+      0 0 0 1px #2E3550,
+      0 0 0 8px #0F1220,
+      0 0 0 9px #2E3550,
+      0 40px 100px rgba(0,0,0,0.9),
+      inset 0 0 0 1px rgba(255,255,255,0.05);
+  }
+ 
+  .flow-hint {
+    margin-top: 14px;
+    font-size: 11px;
+    color: #2E3550;
+    text-align: center;
+    max-width: 390px;
+    line-height: 1.6;
+  }
+ 
+  .screen {
+    position: absolute;
+    inset: 0;
+    background: #1A1F36;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: none;
+    flex-direction: column;
+    scrollbar-width: none;
+  }
+  .screen::-webkit-scrollbar { display: none; }
+  .screen.active { display: flex; }
+ 
+  /* Status bar */
+  .status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 24px 6px;
+    flex-shrink: 0;
+  }
+  .status-time { font-size: 15px; font-weight: 700; color: #fff; }
+  .status-icons { display: flex; gap: 5px; align-items: center; font-size: 12px; color: #fff; }
+ 
+  /* Top nav */
+  .top-nav {
+    display: flex;
+    align-items: center;
+    padding: 4px 16px 12px;
+    flex-shrink: 0;
+    gap: 8px;
+  }
+  .nav-back {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: #252B45;
+    border: none;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s;
+    line-height: 1;
+  }
+  .nav-back:active { background: #2E3550; }
+  .nav-title { flex: 1; text-align: center; font-size: 17px; font-weight: 700; color: #fff; }
+  .nav-action {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: #252B45;
+    border: none;
+    color: #9BA3C4;
+    font-size: 15px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .nav-spacer { width: 36px; flex-shrink: 0; }
+ 
+  .scroll-content {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: 96px;
+    scrollbar-width: none;
+  }
+  .scroll-content::-webkit-scrollbar { display: none; }
+ 
+  /* Bottom nav */
+  .bottom-nav {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 80px;
+    background: #12162A;
+    border-top: 0.5px solid #252B45;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding-bottom: 14px;
+  }
+  .nav-item {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    cursor: pointer; padding: 6px 14px;
+  }
+  .nav-item span:first-child { font-size: 19px; }
+  .nav-item span:last-child { font-size: 10px; color: #4A5178; font-weight: 500; }
+  .nav-item.active span:last-child { color: #378ADD; }
+ 
+  /* Typography */
+  .section-label {
+    font-size: 11px; font-weight: 700; color: #4A5178;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 0 16px 8px;
+  }
+  .screen-big-title {
+    font-size: 24px; font-weight: 700; color: #fff;
+    padding: 0 16px 16px;
+  }
+ 
+  /* Stat chips */
+  .stat-chips { display: flex; gap: 8px; padding: 0 16px 16px; }
+  .stat-chip { flex: 1; background: #252B45; border-radius: 12px; padding: 12px 8px; text-align: center; }
+  .stat-chip-val { font-size: 18px; font-weight: 700; color: #fff; }
+  .stat-chip-label { font-size: 10px; color: #4A5178; margin-top: 2px; font-weight: 500; }
+ 
+  /* Seasonal banner */
+  .seasonal-banner {
+    margin: 0 16px 16px;
+    background: linear-gradient(135deg, #221A08 0%, #1A1306 100%);
+    border: 1px solid #F5A623;
+    border-radius: 16px;
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    gap: 10px;
+  }
+  .seasonal-banner:active { opacity: 0.75; }
+  .banner-left { display: flex; align-items: center; gap: 10px; flex: 1; }
+  .banner-emoji { font-size: 22px; flex-shrink: 0; }
+  .banner-title { font-size: 14px; font-weight: 700; color: #F5A623; }
+  .banner-sub { font-size: 11px; color: #8B7040; margin-top: 2px; }
+  .banner-chip {
+    background: #E84B4B18;
+    border: 1px solid #E84B4B;
+    border-radius: 10px;
+    padding: 6px 10px;
+    font-size: 11px; font-weight: 700; color: #E84B4B;
+    text-align: center; white-space: nowrap; flex-shrink: 0;
+  }
+ 
+  /* Outlet card */
+  .outlet-card {
+    margin: 0 16px 10px;
+    background: #252B45;
+    border-radius: 16px;
+    padding: 14px;
+    cursor: pointer;
+    transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .outlet-card:active { background: #2E3550; }
+  .outlet-avatar {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .outlet-info { flex: 1; min-width: 0; }
+  .outlet-name { font-size: 14px; font-weight: 700; color: #fff; }
+  .outlet-meta { font-size: 11px; color: #4A5178; margin-top: 2px; }
+  .outlet-badges { display: flex; gap: 5px; margin-top: 7px; flex-wrap: wrap; }
+  .outlet-chevron { color: #2E3550; font-size: 20px; flex-shrink: 0; }
+ 
+  /* Badges */
+  .badge {
+    font-size: 10px; font-weight: 700;
+    padding: 3px 8px; border-radius: 6px;
+  }
+  .badge-red { background: #E84B4B18; color: #E84B4B; border: 0.5px solid #E84B4B40; }
+  .badge-green { background: #3BAC6E18; color: #3BAC6E; border: 0.5px solid #3BAC6E40; }
+  .badge-amber { background: #F5A62318; color: #F5A623; border: 0.5px solid #F5A62340; }
+  .badge-blue { background: #378ADD18; color: #378ADD; border: 0.5px solid #378ADD40; }
+  .badge-grey { background: #4A517818; color: #7B85A8; border: 0.5px solid #4A517840; }
+  .badge-purple { background: #8B5CF618; color: #A78BFA; border: 0.5px solid #8B5CF640; }
+ 
+  /* At-risk header */
+  .at-risk-header {
+    margin: 0 16px 16px;
+    background: linear-gradient(135deg, #221A08, #1A1306);
+    border: 1px solid #F5A62350;
+    border-radius: 16px;
+    padding: 16px;
+  }
+  .at-risk-title { font-size: 16px; font-weight: 700; color: #F5A623; margin-bottom: 5px; }
+  .at-risk-sub { font-size: 12px; color: #8B7040; line-height: 1.5; }
+  .priority-high { background: #E84B4B18; color: #E84B4B; border: 0.5px solid #E84B4B40; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 6px; }
+  .priority-med { background: #F5A62318; color: #F5A623; border: 0.5px solid #F5A62340; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 6px; }
+ 
+  /* Outlet header */
+  .outlet-header {
+    margin: 0 16px 14px;
+    background: #252B45;
+    border-radius: 18px;
+    padding: 18px;
+  }
+  .outlet-header-name { font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 5px; }
+  .outlet-header-meta { font-size: 12px; color: #4A5178; line-height: 1.5; }
+  .outlet-header-badges { display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap; }
+ 
+  /* Season Ready Card */
+  .sr-card {
+    margin: 0 16px 14px;
+    border-radius: 18px;
+    overflow: hidden;
+  }
+  .sr-card-expanded {
+    background: linear-gradient(160deg, #1E1A0D 0%, #191D32 70%);
+    border: 1px solid #F5A62340;
+  }
+  .sr-card-collapsed {
+    background: #252B45;
+    border: 1px solid #378ADD30;
+    border-left: 3px solid #378ADD;
+  }
+  .sr-header {
+    display: flex; align-items: center;
+    padding: 13px 14px;
+    gap: 8px;
+    border-bottom: 0.5px solid #F5A62318;
+  }
+  .sr-header-collapsed { border-bottom: none; cursor: pointer; }
+  .sr-icon { font-size: 16px; }
+  .sr-title { font-size: 13px; font-weight: 700; color: #F5A623; flex: 1; }
+  .sr-title-blue { color: #378ADD; }
+  .sr-window-chip {
+    background: #F5A62312;
+    border: 0.5px solid #F5A62345;
+    border-radius: 7px;
+    padding: 3px 8px;
+    font-size: 10px; font-weight: 700; color: #F5A623;
+    flex-shrink: 0;
+  }
+  .sr-chevron { color: #4A5178; font-size: 15px; cursor: pointer; flex-shrink: 0; }
+  .sr-body { padding: 0 14px 14px; }
+ 
+  .sr-signal {
+    font-size: 13px; color: #C4A055; line-height: 1.6;
+    padding: 12px 0;
+    border-bottom: 0.5px solid #2E3550;
+  }
+  .sr-signal strong { color: #F5A623; }
+ 
+  /* Range bar */
+  .range-section { padding: 12px 0; border-bottom: 0.5px solid #2E3550; }
+  .range-sublabel { font-size: 10px; font-weight: 700; color: #4A5178; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 6px; }
+  .range-title-text { font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 14px; }
+  .range-bar-wrap { position: relative; padding-bottom: 24px; margin-bottom: 4px; }
+  .range-bar-bg { height: 8px; background: #2E3550; border-radius: 4px; position: relative; }
+  .range-bar-fill { position: absolute; left: 0; top: 0; height: 100%; border-radius: 4px; background: linear-gradient(90deg, #F5A623, #3BAC6E); }
+  .r-marker { position: absolute; top: -5px; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; }
+  .r-dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #1A1F36; }
+  .r-dot-amber { background: #F5A623; }
+  .r-dot-grey { background: #7B85A8; }
+  .r-dot-green { background: #3BAC6E; }
+  .r-mlabel { font-size: 9px; color: #7B85A8; margin-top: 5px; text-align: center; white-space: nowrap; }
+  .range-caption { font-size: 10px; color: #4A5178; line-height: 1.4; }
+ 
+  .sr-peer {
+    padding: 10px 0 12px;
+    border-bottom: 0.5px solid #2E3550;
+    font-size: 12px; color: #7B85A8;
+    display: flex; align-items: flex-start; gap: 7px; line-height: 1.5;
+  }
+  .sr-peer strong { color: #9BA3C4; }
+ 
+  .sr-actions { display: flex; gap: 8px; padding-top: 12px; }
+  .btn-show-retailer {
+    flex: 1; height: 40px;
+    background: transparent;
+    border: 1px solid #378ADD50;
+    border-radius: 11px;
+    color: #378ADD; font-size: 12px; font-weight: 700;
+    cursor: pointer; transition: background 0.15s;
+  }
+  .btn-show-retailer:active { background: #378ADD15; }
+  .btn-dismiss {
+    height: 40px; padding: 0 16px;
+    background: transparent; border: none;
+    color: #4A5178; font-size: 12px; font-weight: 600;
+    cursor: pointer;
+  }
+ 
+  /* Detail sections */
+  .px16 { padding: 0 16px; }
+  .detail-card {
+    background: #252B45;
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+  .detail-card-label { font-size: 11px; font-weight: 700; color: #4A5178; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 10px; }
+  .order-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 0.5px solid #2E3550; }
+  .order-row:last-child { border-bottom: none; }
+  .order-date { font-size: 12px; color: #7B85A8; }
+  .order-amt { font-size: 13px; font-weight: 700; color: #fff; }
+ 
+  /* Sticky CTA */
+  .sticky-cta { padding: 12px 16px 0; background: linear-gradient(to top, #1A1F36 60%, transparent); }
+  .btn-primary {
+    width: 100%; height: 56px;
+    background: linear-gradient(135deg, #378ADD 0%, #2257B8 100%);
+    border: none; border-radius: 16px;
+    color: #fff; font-size: 16px; font-weight: 700;
+    cursor: pointer; transition: opacity 0.15s, transform 0.1s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    box-shadow: 0 8px 28px rgba(55,138,221,0.35);
+  }
+  .btn-primary:active { opacity: 0.85; transform: scale(0.99); }
+  .btn-primary:disabled { opacity: 0.3; cursor: default; }
+  .btn-secondary {
+    width: 100%; height: 50px;
+    background: transparent;
+    border: 1px solid #2E3550;
+    border-radius: 14px;
+    color: #9BA3C4; font-size: 15px; font-weight: 600;
+    cursor: pointer; transition: background 0.15s;
+  }
+  .btn-secondary:active { background: #252B45; }
+ 
+  /* Retailer view */
+  .chart-title-label { font-size: 11px; font-weight: 700; color: #4A5178; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 12px; }
+  .bar-chart-outer { padding: 16px; border-bottom: 0.5px solid #2E3550; }
+  .bars-row { display: flex; align-items: flex-end; gap: 4px; height: 64px; }
+  .bar-item { flex: 1; border-radius: 4px 4px 0 0; }
+  .bar-normal { background: #378ADD40; }
+  .bar-peak { background: #F5A623; }
+  .labels-row { display: flex; gap: 4px; margin-top: 6px; }
+  .bar-label { flex: 1; font-size: 8px; color: #4A5178; text-align: center; }
+  .bar-label-peak { color: #F5A623; font-weight: 700; }
+  .retailer-insight-block { padding: 16px; border-bottom: 0.5px solid #2E3550; }
+  .retailer-insight-text { font-size: 14px; color: #C4C9E0; line-height: 1.65; }
+  .retailer-insight-text strong { color: #F5A623; }
+  .retailer-range-block { padding: 16px 16px 20px; }
+  .retailer-range-big { font-size: 28px; font-weight: 700; color: #fff; margin: 6px 0 4px; }
+  .retailer-range-sub { font-size: 12px; color: #4A5178; }
+ 
+  /* Dismiss */
+  .dismiss-intro { padding: 8px 20px 20px; font-size: 13px; color: #7B85A8; line-height: 1.6; }
+  .dismiss-chip {
+    margin: 0 16px 10px;
+    padding: 16px;
+    background: #252B45;
+    border: 1px solid #2E3550;
+    border-radius: 14px;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 12px;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .dismiss-chip:active { background: #2E3550; border-color: #378ADD60; }
+  .dismiss-chip-icon { font-size: 20px; }
+  .dismiss-chip-text { font-size: 14px; font-weight: 600; color: #C4C9E0; }
+  .dismiss-caption { font-size: 11px; color: #3BAC6E; padding: 4px 20px 12px; text-align: center; line-height: 1.5; }
+  .dismiss-cancel { font-size: 14px; color: #4A5178; text-align: center; padding: 12px; cursor: pointer; font-weight: 500; }
+  .dismiss-cancel:active { color: #7B85A8; }
+ 
+  /* Order booking */
+  .scheme-banner {
+    margin: 0 16px 12px;
+    background: linear-gradient(135deg, #0C2016, #091810);
+    border: 1px solid #3BAC6E50;
+    border-radius: 14px;
+    padding: 12px 14px;
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  }
+  .scheme-left { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+  .scheme-icon-big { font-size: 22px; flex-shrink: 0; }
+  .scheme-name { font-size: 13px; font-weight: 700; color: #3BAC6E; }
+  .scheme-sub-text { font-size: 11px; color: #2A6B47; margin-top: 1px; }
+  .scheme-right { text-align: right; flex-shrink: 0; }
+  .scheme-amount { font-size: 17px; font-weight: 700; color: #3BAC6E; }
+  .scheme-amt-label { font-size: 10px; color: #2A6B47; }
+ 
+  /* Range indicator */
+  .range-indicator {
+    margin: 0 16px 12px;
+    background: #252B45;
+    border-radius: 12px;
+    padding: 12px;
+  }
+  .ri-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+  .ri-label { font-size: 12px; color: #7B85A8; }
+  .ri-value { font-size: 13px; font-weight: 700; }
+  .ri-bar-bg { height: 6px; background: #1A1F36; border-radius: 3px; overflow: hidden; margin-top: 8px; }
+  .ri-fill { height: 100%; border-radius: 3px; background: #F5A623; transition: width 0.35s ease, background 0.35s; }
+  .ri-fill.in-range { background: #3BAC6E; }
+ 
+  /* Suggested basket */
+  .suggested-btn {
+    margin: 0 16px 12px;
+    width: calc(100% - 32px);
+    padding: 12px 14px;
+    background: #1E2A42;
+    border: 1px solid #378ADD40;
+    border-radius: 13px;
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    cursor: pointer; transition: background 0.15s;
+  }
+  .suggested-btn:active { background: #252B45; }
+  .suggested-left { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+  .suggested-basket-icon { font-size: 20px; flex-shrink: 0; }
+  .suggested-title { font-size: 13px; font-weight: 700; color: #378ADD; }
+  .suggested-sub { font-size: 11px; color: #4A5178; margin-top: 1px; }
+  .suggested-price { font-size: 15px; font-weight: 700; color: #378ADD; flex-shrink: 0; }
+ 
+  /* Category tabs */
+  .cat-tabs { display: flex; padding: 0 16px; gap: 8px; margin-bottom: 12px; overflow-x: auto; scrollbar-width: none; }
+  .cat-tabs::-webkit-scrollbar { display: none; }
+  .cat-tab {
+    flex-shrink: 0; padding: 8px 16px;
+    border-radius: 10px; font-size: 13px; font-weight: 600;
+    cursor: pointer; background: #252B45; color: #4A5178; border: none;
+    transition: all 0.15s;
+  }
+  .cat-tab.active { background: #378ADD20; color: #378ADD; border: 1px solid #378ADD40; }
+ 
+  /* SKU rows */
+  .sku-list { padding: 0 16px; }
+  .sku-row { background: #252B45; border-radius: 14px; padding: 13px 14px; margin-bottom: 8px; }
+  .sku-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .sku-name-text { font-size: 13px; font-weight: 700; color: #fff; }
+  .sku-price-text { font-size: 11px; color: #4A5178; margin-top: 2px; }
+  .sku-stepper { display: flex; align-items: center; flex-shrink: 0; }
+  .stepper-btn {
+    width: 34px; height: 34px; border-radius: 9px;
+    border: 1px solid #2E3550; background: #1A1F36;
+    color: #fff; font-size: 20px; font-weight: 300;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: background 0.1s; user-select: none;
+  }
+  .stepper-btn:active { background: #2E3550; }
+  .stepper-val { width: 38px; text-align: center; font-size: 16px; font-weight: 700; color: #fff; }
+  .sku-hint { font-size: 10px; color: #C48920; margin-top: 6px; opacity: 0; transition: opacity 0.2s; }
+  .sku-hint.show { opacity: 1; }
+ 
+  /* Order total */
+  .order-total-bar {
+    margin: 8px 16px 0;
+    background: #252B45;
+    border-radius: 16px;
+    padding: 13px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    border: 0.5px solid #2E3550;
+    position: sticky; bottom: 82px;
+  }
+  .total-left-label { font-size: 12px; color: #7B85A8; }
+  .total-amount-display { font-size: 20px; font-weight: 700; color: #fff; }
+  .btn-review {
+    height: 48px; padding: 0 20px;
+    background: linear-gradient(135deg, #378ADD, #2257B8);
+    border: none; border-radius: 13px;
+    color: #fff; font-size: 14px; font-weight: 700;
+    cursor: pointer; transition: opacity 0.15s;
+    box-shadow: 0 4px 16px rgba(55,138,221,0.3);
+  }
+  .btn-review:active { opacity: 0.85; }
+  .btn-review:disabled { opacity: 0.35; cursor: default; box-shadow: none; }
+ 
+  /* Review screen */
+  .review-meta { padding: 0 16px 14px; }
+  .review-outlet-name { font-size: 16px; font-weight: 700; color: #fff; }
+  .review-outlet-sub { font-size: 12px; color: #4A5178; margin-top: 3px; }
+  .confirm-chip {
+    margin: 0 16px 10px;
+    border-radius: 12px;
+    padding: 11px 13px;
+    display: flex; align-items: center; gap: 9px;
+    font-size: 12px; line-height: 1.4;
+  }
+  .confirm-chip-amber { background: #F5A62310; border: 1px solid #F5A62335; color: #C4A055; }
+  .confirm-chip-green { background: #3BAC6E10; border: 1px solid #3BAC6E35; color: #3BAC6E; }
+  .confirm-chip strong { font-weight: 700; }
+  .review-items-card { margin: 0 16px 10px; background: #252B45; border-radius: 14px; padding: 14px; }
+  .total-card { margin: 0 16px 16px; background: #252B45; border-radius: 14px; padding: 14px; }
+  .total-line { display: flex; justify-content: space-between; padding: 5px 0; }
+  .total-line-label { font-size: 13px; color: #7B85A8; }
+  .total-line-val { font-size: 13px; color: #9BA3C4; }
+  .total-line.saving .total-line-val { color: #3BAC6E; }
+  .total-line.net .total-line-label { font-size: 16px; font-weight: 700; color: #fff; }
+  .total-line.net .total-line-val { font-size: 16px; font-weight: 700; color: #fff; }
+  .total-divider { border: none; border-top: 0.5px solid #2E3550; margin: 8px 0; }
+  .confirm-btn-wrap { padding: 0 16px 16px; }
+ 
+  /* Confirmation */
+  .confirm-center { padding: 36px 20px 20px; display: flex; flex-direction: column; align-items: center; }
+  .confirm-big-icon { font-size: 72px; margin-bottom: 16px; }
+  .confirm-title { font-size: 26px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+  .confirm-ref { font-size: 12px; color: #4A5178; margin-bottom: 24px; }
+  .confirm-sr-card {
+    width: 100%; background: linear-gradient(135deg, #1E1A0D, #191D32);
+    border: 1px solid #F5A62340; border-radius: 16px; padding: 14px; margin-bottom: 14px;
+  }
+  .confirm-sr-title { font-size: 13px; font-weight: 700; color: #F5A623; margin-bottom: 6px; }
+  .confirm-sr-body { font-size: 12px; color: #C4A055; line-height: 1.55; }
+  .confirm-sr-body strong { color: #F5A623; }
+  .confirm-tracker-text { font-size: 12px; color: #4A5178; margin-bottom: 20px; text-align: center; }
+  .confirm-tracker-text strong { color: #9BA3C4; }
+  .confirm-next-card {
+    width: 100%; background: #252B45; border: 1px solid #2E3550;
+    border-radius: 14px; padding: 13px 14px;
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer; margin-bottom: 12px; transition: background 0.15s;
+  }
+  .confirm-next-card:active { background: #2E3550; }
+  .confirm-next-title { font-size: 13px; color: #fff; font-weight: 600; }
+  .confirm-next-sub { font-size: 11px; color: #4A5178; margin-top: 3px; }
+  .confirm-next-arrow { font-size: 22px; color: #4A5178; }
+  .confirm-back-btn { width: 100%; }
+ 
+  /* Dismissed state */
+  .dismissed-banner {
+    margin: 0 16px 14px;
+    background: #1A2030;
+    border: 1px solid #2E3550;
+    border-left: 3px solid #3BAC6E;
+    border-radius: 14px;
+    padding: 13px 14px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .dismissed-check { font-size: 18px; }
+  .dismissed-text { font-size: 12px; color: #4A5178; line-height: 1.5; }
+  .dismissed-text strong { color: #7B85A8; }
+ 
+  /* Toast */
+  .toast {
+    position: absolute;
+    bottom: 92px; left: 16px; right: 16px;
+    background: #3BAC6E;
+    border-radius: 14px;
+    padding: 13px 16px;
+    font-size: 13px; font-weight: 700; color: #fff;
+    display: flex; align-items: center; gap: 8px;
+    opacity: 0; transform: translateY(8px);
+    transition: opacity 0.3s, transform 0.3s;
+    z-index: 300; pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+ 
+  /* Fade in */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fade-in { animation: fadeIn 0.28s ease forwards; }
+ 
+  /* Empty state card */
+  .empty-sr {
+    margin: 0 16px 14px;
+    background: #252B45;
+    border-left: 3px solid #2E3550;
+    border-radius: 14px;
+    padding: 14px;
+  }
+  .empty-sr-title { font-size: 13px; font-weight: 600; color: #7B85A8; display: flex; align-items: center; gap: 7px; margin-bottom: 7px; }
+  .empty-sr-body { font-size: 12px; color: #4A5178; line-height: 1.5; }
+  .empty-sr-peer { font-size: 12px; color: #378ADD; margin-top: 8px; }
+</style>
+</head>
+<body>
+ 
+<div class="prototype-label">Season Ready — GT App · <span>FieldAssist APM Assignment · Kriti Singhal</span></div>
+ 
+<div class="device-shell">
+ 
+  <!-- TOAST -->
+  <div class="toast" id="toast">✓ <span id="toast-msg">Reason logged. You're covered.</span></div>
+ 
+  <!-- ═══════════════ SCREEN 1: ROUTE PLAN ═══════════════ -->
+  <div class="screen active" id="s-route">
+    <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons"><span>●●●</span><span>WiFi</span><span>🔋</span></div></div>
+    <div class="top-nav"><div class="nav-spacer"></div><div class="nav-title">Route Plan</div><button class="nav-action">⋯</button></div>
+    <div class="scroll-content">
+      <div class="screen-big-title">Tuesday, 18 Mar</div>
+      <div class="stat-chips">
+        <div class="stat-chip"><div class="stat-chip-val">28</div><div class="stat-chip-label">Outlets</div></div>
+        <div class="stat-chip"><div class="stat-chip-val">6</div><div class="stat-chip-label">Visited</div></div>
+        <div class="stat-chip"><div class="stat-chip-val">22</div><div class="stat-chip-label">Remaining</div></div>
+      </div>
+      <div class="seasonal-banner" onclick="go('s-atrisk')">
+        <div class="banner-left"><span class="banner-emoji">🔥</span><div><div class="banner-title">Summer window: 14 days left</div><div class="banner-sub">Tap to see at-risk outlets →</div></div></div>
+        <div class="banner-chip">6 not<br>stocked</div>
+      </div>
+      <div class="section-label">TODAY'S ROUTE</div>
+      <!-- FIX 1: OT-011 → Seg A, Pashan, name Vitthal Stores -->
+      <div class="outlet-card" onclick="go('s-ot011')">
+        <div class="outlet-avatar" style="background:#F5A62315">🏪</div>
+        <div class="outlet-info"><div class="outlet-name">Vitthal Stores</div><div class="outlet-meta">OT-011 · Seg A · Pashan · Last: 4 Mar</div><div class="outlet-badges"><span class="badge badge-red">🔴 At Risk</span><span class="badge badge-amber">Summer SKUs</span></div></div>
+        <div class="outlet-chevron">›</div>
+      </div>
+      <!-- FIX 2: OT-015 → Seg A, Bavdhan (correct per sample data) -->
+      <div class="outlet-card" onclick="go('s-ot015')">
+        <div class="outlet-avatar" style="background:#3BAC6E15">🏬</div>
+        <div class="outlet-info"><div class="outlet-name">Mahesh General Stores</div><div class="outlet-meta">OT-015 · Seg A · Bavdhan · Last: 5 Mar</div><div class="outlet-badges"><span class="badge badge-green">✓ Ready</span><span class="badge badge-blue">Top Performer</span></div></div>
+        <div class="outlet-chevron">›</div>
+      </div>
+      <!-- FIX 3: OT-003 → Seg A, Warje -->
+      <div class="outlet-card" onclick="go('s-ot003')">
+        <div class="outlet-avatar" style="background:#E84B4B15">🛒</div>
+        <div class="outlet-info"><div class="outlet-name">Patil Kirana</div><div class="outlet-meta">OT-003 · Seg A · Warje · Last: 18 Feb</div><div class="outlet-badges"><span class="badge badge-red">🔴 At Risk</span><span class="badge badge-grey">Demand Blind</span></div></div>
+        <div class="outlet-chevron">›</div>
+      </div>
+      <!-- FIX 4: OT-009 → Dnyaneshwar Kirana, Pashan, Seg C -->
+      <div class="outlet-card" onclick="go('s-ot009')">
+        <div class="outlet-avatar" style="background:#E84B4B15">🏪</div>
+        <div class="outlet-info"><div class="outlet-name">Dnyaneshwar Kirana</div><div class="outlet-meta">OT-009 · Seg C · Pashan · Last: 2 Mar</div><div class="outlet-badges"><span class="badge badge-red">💳 Credit Issue</span><span class="badge badge-grey">₹1,600 overdue</span></div></div>
+        <div class="outlet-chevron">›</div>
+      </div>
+      <!-- FIX 5: OT-001 → Seg A -->
+      <div class="outlet-card">
+        <div class="outlet-avatar" style="background:#378ADD15">🏪</div>
+        <div class="outlet-info"><div class="outlet-name">Mahadev General Store</div><div class="outlet-meta">OT-001 · Seg A · Kothrud · Last: 1 Mar</div><div class="outlet-badges"><span class="badge badge-amber">Scheme Query</span></div></div>
+        <div class="outlet-chevron">›</div>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item"><span>🏠</span><span>Home</span></div>
+      <div class="nav-item active"><span>🗺️</span><span>Route</span></div>
+      <div class="nav-item"><span>🏪</span><span>Outlets</span></div>
+      <div class="nav-item"><span>📋</span><span>Orders</span></div>
+    </div>
+  </div>
+ 
+  <!-- ═══════════════ SCREEN AT-RISK LIST ═══════════════ -->
+  <div class="screen" id="s-atrisk">
+    <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons"><span>●●●</span><span>WiFi</span><span>🔋</span></div></div>
+    <div class="top-nav"><button class="nav-back" onclick="go('s-route')">‹</button><div class="nav-title">Advance Stock Needed</div><div class="nav-spacer"></div></div>
+    <div class="scroll-content">
+      <div class="at-risk-header"><div class="at-risk-title">🔥 6 outlets not advance-stocked</div><div class="at-risk-sub">Summer peak in 14 days. Visit these before April 1st to secure advance orders.</div></div>
+      <div class="section-label">HIGH PRIORITY</div>
+      <!-- FIX: OT-011 name and location in at-risk list -->
+      <div class="outlet-card" onclick="go('s-ot011')">
+        <div class="outlet-avatar" style="background:#F5A62315">🏪</div>
+        <div class="outlet-info"><div class="outlet-name">Vitthal Stores</div><div class="outlet-meta">OT-011 · Seg A · Pashan · Last order: 22 Feb · Range: 16–22 units</div><div class="outlet-badges"><span class="priority-high">HIGH</span><span class="badge badge-amber">Dead stock fear</span></div></div>
+        <div class="outlet-chevron">›</div>
+      </div>
+      <!-- FIX: OT-003 location in at-risk list -->
+      <div class="outlet-card" onclick="go('s-ot003')">
+        <div class="outlet-avatar" style="background:#E84B4B15">🛒</div>
+        <div class="outlet-info"><div class="outlet-name">Patil Kirana</div><div class="outlet-meta">OT-003 · Seg A · Warje · Last order: 18 Feb · Range: 8–14 units</div><div class="outlet-badges"><span class="priority-high">HIGH</span><span class="badge badge-grey">Demand blind</span></div></div>
+        <div class="outlet-chevron">›</div>
+      </div>
+      <div class="section-label" style="padding-top:8px">MEDIUM PRIORITY</div>
+      <!-- FIX: OT-001 → Seg A, correct name -->
+      <div class="outlet-card">
+        <div class="outlet-avatar" style="background:#378ADD15">🏪</div>
+        <div class="outlet-info"><div class="outlet-name">Mahadev General Store</div><div class="outlet-meta">OT-001 · Seg A · Kothrud · Last order: 1 Mar · Range: 12–18 units</div><div class="outlet-badges"><span class="priority-med">MED</span><span class="badge badge-amber">Scheme query</span></div></div>
+        <div class="outlet-chevron">›</div>
+      </div>
+      <div class="outlet-card">
+        <div class="outlet-avatar" style="background:#F5A62315">🏪</div>
+        <div class="outlet-info"><div class="outlet-name">Amol General Store</div><div class="outlet-meta">OT-024 · Seg B · Warje · Last order: 25 Feb · Range: 10–16 units</div><div class="outlet-badges"><span class="priority-med">MED</span><span class="badge badge-grey">New owner</span></div></div>
+        <div class="outlet-chevron">›</div>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item"><span>🏠</span><span>Home</span></div>
+      <div class="nav-item active"><span>🗺️</span><span>Route</span></div>
+      <div class="nav-item"><span>🏪</span><span>Outlets</span></div>
+      <div class="nav-item"><span>📋</span><span>Orders</span></div>
+    </div>
+  </div>
+ 
+  <!-- ═══════════════ SCREEN OT-011 OUTLET DETAILS ═══════════════ -->
+  <div class="screen" id="s-ot011">
+    <div class="status-bar"><span class="status-time">9:48</span><div class="status-icons"><span>●●●</span><span>WiFi</span><span>🔋</span></div></div>
+    <div class="top-nav"><button class="nav-back" onclick="go('s-route')">‹</button><div class="nav-title">Outlet Details</div><button class="nav-action">📍</button></div>
+    <div class="scroll-content">
+      <!-- FIX: OT-011 correct name, segment, location -->
+      <div class="outlet-header fade-in">
+        <div class="outlet-header-name">Vitthal Stores</div>
+        <div class="outlet-header-meta">OT-011 · Segment A · Pashan, Pune<br>Last visit: 4 Mar · 18 total visits</div>
+        <div class="outlet-header-badges"><span class="badge badge-amber">Summer SKUs</span><span class="badge badge-grey">Beverages</span><span class="badge badge-grey">ORS</span></div>
+      </div>
+      <!-- Season Ready Card Expanded -->
+      <div class="sr-card sr-card-expanded fade-in" id="src-011">
+        <div class="sr-header">
+          <span class="sr-icon">🔥</span>
+          <span class="sr-title">Season Ready</span>
+          <span class="sr-window-chip">Summer · 14 days</span>
+          <span class="sr-chevron" onclick="collapseCard('src-011','s-ot011')">∧</span>
+        </div>
+        <div class="sr-body">
+          <div class="sr-signal"><strong>Last April, this outlet ran short around Apr 18th.</strong><br>Stocking before Apr 10th keeps shelves full through peak demand.</div>
+          <div class="range-section">
+            <div class="range-sublabel">Recommended advance stock</div>
+            <div class="range-title-text">Safe range: 16–22 units</div>
+            <div class="range-bar-wrap">
+              <div class="range-bar-bg">
+                <div class="range-bar-fill" style="width:72%"></div>
+                <div class="r-marker" style="left:0%"><div class="r-dot r-dot-amber"></div><div class="r-mlabel">Floor<br>16</div></div>
+                <div class="r-marker" style="left:43%"><div class="r-dot r-dot-grey"></div><div class="r-mlabel">Last yr<br>19</div></div>
+                <div class="r-marker" style="left:100%"><div class="r-dot r-dot-green"></div><div class="r-mlabel">Ceiling<br>22</div></div>
+              </div>
+            </div>
+            <div class="range-caption">Floor: your order baseline · Ceiling: top outlets in your territory</div>
+          </div>
+          <div class="sr-peer"><span>👥</span><span><strong>Similar outlets in Pashan</strong> are stocking 20+ units this week.</span></div>
+          <div class="sr-actions">
+            <button class="btn-show-retailer" onclick="go('s-retailer')">Show retailer data</button>
+            <button class="btn-dismiss" onclick="go('s-dismiss-011')">Dismiss</button>
+          </div>
+        </div>
+      </div>
+      <div class="px16">
+        <div class="detail-card">
+          <div class="detail-card-label">Last 3 orders</div>
+          <div class="order-row"><span class="order-date">Feb 2025</span><span class="order-amt">₹1,840</span><span class="badge badge-green">Paid</span></div>
+          <div class="order-row"><span class="order-date">Jan 2025</span><span class="order-amt">₹1,620</span><span class="badge badge-green">Paid</span></div>
+          <div class="order-row"><span class="order-date">Dec 2024</span><span class="order-amt">₹980</span><span class="badge badge-green">Paid</span></div>
+        </div>
+        <div class="detail-card">
+          <div class="detail-card-label">Active schemes</div>
+          <div class="order-row"><span class="order-date">S-001 · Summer Beverages</span><span class="badge badge-green">Buy 12 Get 2 Free</span></div>
+        </div>
+      </div>
+      <div class="sticky-cta"><button class="btn-primary" onclick="go('s-booking')">Start Order →</button></div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item"><span>🏠</span><span>Home</span></div>
+      <div class="nav-item active"><span>🗺️</span><span>Route</span></div>
+      <div class="nav-item"><span>🏪</span><span>Outlets</span></div>
+      <div class="nav-item"><span>📋</span><span>Orders</span></div>
+    </div>
+  </div>
+ 
+  <!-- ═══════════════ SCREEN OT-015 OUTLET DETAILS ═══════════════ -->
+  <div class="screen" id="s-ot015">
+    <div class="status-bar"><span class="status-time">10:12</span><div class="status-icons"><span>●●●</span><span>WiFi</span><span>🔋</span></div></div>
+    <div class="top-nav"><button class="nav-back" onclick="go('s-route')">‹</button><div class="nav-title">Outlet Details</div><button class="nav-action">📍</button></div>
+    <div class="scroll-content">
+      <!-- FIX: OT-015 location → Bavdhan -->
+      <div class="outlet-header fade-in">
+        <div class="outlet-header-name">Mahesh General Stores</div>
+        <div class="outlet-header-meta">OT-015 · Segment A · Bavdhan, Pune<br>Last visit: 5 Mar · 24 total visits</div>
+        <div class="outlet-header-badges"><span class="badge badge-green">✓ Top Performer</span><span class="badge badge-blue">Segment A</span></div>
+      </div>
+      <!-- Season Ready COLLAPSED -->
+      <div class="sr-card sr-card-collapsed fade-in" id="src-015" onclick="expandOT015()">
+        <div class="sr-header sr-header-collapsed">
+          <span class="sr-icon">🔥</span>
+          <span class="sr-title sr-title-blue">Summer approaching · Tap to see seasonal data</span>
+          <span class="sr-chevron">∨</span>
+        </div>
+      </div>
+      <div class="px16">
+        <div class="detail-card">
+          <div class="detail-card-label">Last 3 orders</div>
+          <div class="order-row"><span class="order-date">Feb 2025</span><span class="order-amt">₹4,200</span><span class="badge badge-green">Paid</span></div>
+          <div class="order-row"><span class="order-date">Jan 2025</span><span class="order-amt">₹3,800</span><span class="badge badge-green">Paid</span></div>
+          <div class="order-row"><span class="order-date">Apr 2024</span><span class="order-amt">₹6,100</span><span class="badge badge-green">Paid</span></div>
+        </div>
+        <div class="detail-card">
+          <div class="detail-card-label">Active schemes</div>
+          <div class="order-row"><span class="order-date">S-001 · Summer Beverages</span><span class="badge badge-green">Buy 12 Get 2 Free</span></div>
+        </div>
+      </div>
+      <div class="sticky-cta"><button class="btn-primary" onclick="go('s-booking015')">Start Order →</button></div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item"><span>🏠</span><span>Home</span></div>
+      <div class="nav-item active"><span>🗺️</span><span>Route</span></div>
+      <div class="nav-item"><span>🏪</span><span>Outlets</span></div>
+      <div class="nav-item"><span>📋</span><span>Orders</span></div>
+    </div>
+  </div>
+ 
+  <!-- ═══════════════ SCREEN OT-003 OUTLET DETAILS ═══════════════ -->
+  <div class="screen" id="s-ot003">
+    <div class="status-bar"><span class="status-time">11:03</span><div class="status-icons"><span>●●●</span><span>WiFi</span><span>🔋</span></div></div>
+    <div class="top-nav"><button class="nav-back" onclick="go('s-route')">‹</button><div class="nav-title">Outlet Details</div><button class="nav-action">📍</button></div>
+    <div class="scroll-content">
+      <!-- FIX: OT-003 → Seg A, Warje -->
+      <div class="outlet-header fade-in">
+        <div class="outlet-header-name">Patil Kirana</div>
+        <div class="outlet-header-meta">OT-003 · Segment A · Warje, Pune<br>Last visit: 18 Feb · 12 total visits</div>
+        <div class="outlet-header-badges"><span class="badge badge-red">🔴 At Risk</span><span class="badge badge-grey">Demand Blind</span></div>
+      </div>
+      <div class="sr-card sr-card-expanded fade-in">
+        <div class="sr-header"><span class="sr-icon">🔥</span><span class="sr-title">Season Ready</span><span class="sr-window-chip">Summer · 14 days</span></div>
+        <div class="sr-body">
+          <div class="sr-signal">This outlet <strong>didn't stock advance last year</strong> and ran out in peak week. Customers asked — owner reordered too late.</div>
+          <div class="range-section">
+            <div class="range-sublabel">Recommended advance stock</div>
+            <div class="range-title-text">Safe range: 8–14 units</div>
+            <div class="range-bar-wrap">
+              <div class="range-bar-bg">
+                <div class="range-bar-fill" style="width:55%"></div>
+                <div class="r-marker" style="left:0%"><div class="r-dot r-dot-amber"></div><div class="r-mlabel">Floor<br>8</div></div>
+                <div class="r-marker" style="left:100%"><div class="r-dot r-dot-green"></div><div class="r-mlabel">Ceiling<br>14</div></div>
+              </div>
+            </div>
+            <div class="range-caption">No advance order last year — range based on similar Warje outlets</div>
+          </div>
+          <div class="sr-peer"><span>👥</span><span><strong>3 outlets nearby</strong> already placed advance orders this week.</span></div>
+          <div class="sr-actions">
+            <button class="btn-show-retailer" onclick="go('s-retailer')">Show retailer data</button>
+            <button class="btn-dismiss" onclick="go('s-dismiss-011')">Dismiss</button>
+          </div>
+        </div>
+      </div>
+      <!-- Empty state for insufficient history -->
+      <div class="empty-sr">
+        <div class="empty-sr-title">📊 Building seasonal profile</div>
+        <div class="empty-sr-body">Not enough advance-order history yet. Range above is based on similar outlets in your territory — not this outlet's own data.</div>
+        <div class="empty-sr-peer">💡 Similar outlets in Warje: 10–16 units this week</div>
+      </div>
+      <div class="px16">
+        <div class="detail-card">
+          <div class="detail-card-label">Last 3 orders</div>
+          <div class="order-row"><span class="order-date">Feb 2025</span><span class="order-amt">₹1,120</span><span class="badge badge-green">Paid</span></div>
+          <div class="order-row"><span class="order-date">Jan 2025</span><span class="order-amt">₹980</span><span class="badge badge-green">Paid</span></div>
+          <div class="order-row"><span class="order-date">Nov 2024</span><span class="order-amt">₹860</span><span class="badge badge-green">Paid</span></div>
+        </div>
+      </div>
+      <div class="sticky-cta"><button class="btn-primary" onclick="go('s-booking')">Start Order →</button></div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item"><span>🏠</span><span>Home</span></div>
+      <div class="nav-item active"><span>🗺️</span><span>Route</span></div>
+      <div class="nav-item"><span>🏪</span><span>Outlets</span></div>
+      <div class="nav-item"><span>📋</span><span>Orders</span></div>
+    </div>
+  </div>
+ 
+  <!-- ═══════════════ SCREEN OT-009 OUTLET DETAILS ═══════════════ -->
+  <div class="screen" id="s-ot009">
+    <div class="status-bar"><span class="status-time">11:30</span><div class="status-icons"><span>●●●</span><span>WiFi</span><span>🔋</span></div></div>
+    <div class="top-nav"><button class="nav-back" onclick="go('s-route')">‹</button><div class="nav-title">Outlet Details</div><button class="nav-action">📍</button></div>
+    <div class="scroll-content">
+      <!-- FIX: OT-009 → Dnyaneshwar Kirana, Pashan, Seg C -->
+      <div class="outlet-header fade-in">
+        <div class="outlet-header-name">Dnyaneshwar Kirana</div>
+        <div class="outlet-header-meta">OT-009 · Segment C · Pashan, Pune<br>Last visit: 2 Mar · 8 total visits</div>
+        <div class="outlet-header-badges"><span class="badge badge-red">💳 ₹1,600 overdue</span><span class="badge badge-grey">Credit hold</span></div>
+      </div>
+      <div class="sr-card sr-card-expanded fade-in">
+        <div class="sr-header"><span class="sr-icon">🔥</span><span class="sr-title">Season Ready</span><span class="sr-window-chip">Summer · 14 days</span></div>
+        <div class="sr-body">
+          <div class="sr-signal">Seasonal signal active. <strong>Note: ₹1,600 overdue balance.</strong> Resolve before seasonal push to protect the relationship.</div>
+          <div class="range-section">
+            <div class="range-sublabel">Seasonal range if credit cleared</div>
+            <div class="range-title-text">10–16 units</div>
+          </div>
+          <div class="sr-actions">
+            <button class="btn-show-retailer" style="opacity:0.35;cursor:not-allowed">Show retailer data</button>
+            <button class="btn-dismiss" onclick="go('s-dismiss-009')">Dismiss</button>
+          </div>
+        </div>
+      </div>
+      <div class="px16">
+        <div class="detail-card">
+          <div class="detail-card-label">Last 3 orders</div>
+          <div class="order-row"><span class="order-date">Feb 2025</span><span class="order-amt">₹620</span><span class="badge badge-red">Overdue</span></div>
+          <div class="order-row"><span class="order-date">Jan 2025</span><span class="order-amt">₹980</span><span class="badge badge-green">Paid</span></div>
+          <div class="order-row"><span class="order-date">Dec 2024</span><span class="order-amt">₹740</span><span class="badge badge-green">Paid</span></div>
+        </div>
+      </div>
+      <div class="sticky-cta"><button class="btn-primary" disabled>Start Order (Credit Hold)</button></div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item"><span>🏠</span><span>Home</span></div>
+      <div class="nav-item active"><span>🗺️</span><span>Route</span></div>
+      <div class="nav-item"><span>🏪</span><span>Outlets</span></div>
+      <div class="nav-item"><span>📋</span><span>Orders</span></div>
+    </div>
+  </div>
+ 
+  <!-- ═══════════════ SCREEN RETAILER VIEW ═══════════════ -->
+  <div class="screen" id="s-retailer">
+    <div class="status-bar"><span class="status-time">9:51</span><div class="status-icons"><span>●●●</span><span>WiFi</span><span>🔋</span></div></div>
+    <div class="top-nav"><button class="nav-back" onclick="go('s-ot011')">‹</button><div class="nav-title">Your Store's History</div><div class="nav-spacer"></div></div>
+    <div class="scroll-content">
+      <div style="padding:0 16px 14px;"><div style="font-size:12px;color:#4A5178;line-height:1.55;">This is your own order history — shown so you can plan better this summer. No sensitive data is displayed.</div></div>
+      <div class="bar-chart-outer">
+        <div class="chart-title-label">April–May 2024 · Weekly order demand</div>
+        <div class="bars-row">
+          <div class="bar-item bar-normal" style="height:28%"></div>
+          <div class="bar-item bar-normal" style="height:42%"></div>
+          <div class="bar-item bar-peak" style="height:100%"></div>
+          <div class="bar-item bar-peak" style="height:82%"></div>
+          <div class="bar-item bar-normal" style="height:52%"></div>
+          <div class="bar-item bar-normal" style="height:32%"></div>
+          <div class="bar-item bar-normal" style="height:18%"></div>
+          <div class="bar-item bar-normal" style="height:9%"></div>
+        </div>
+        <div class="labels-row">
+          <div class="bar-label">Apr 1</div>
+          <div class="bar-label">Apr 8</div>
+          <div class="bar-label bar-label-peak">Apr 15</div>
+          <div class="bar-label bar-label-peak">Apr 22</div>
+          <div class="bar-label">May 1</div>
+          <div class="bar-label">May 10</div>
+          <div class="bar-label">May 20</div>
+          <div class="bar-label">Jun 1</div>
+        </div>
+        <div style="margin-top:10px;font-size:11px;color:#8B7040;">🟠 Peak weeks — stock ran out around April 18th</div>
+      </div>
+      <div class="retailer-insight-block">
+        <div class="retailer-insight-text">Your shelves ran empty around <strong>April 18th last year</strong>. Demand tapered after May 20th — stocking up before April 10th keeps you covered through the full peak with very little risk of leftover stock.</div>
+      </div>
+      <div class="retailer-range-block">
+        <div class="chart-title-label">Safe stocking range</div>
+        <div class="retailer-range-big">16–22 units</div>
+        <div class="retailer-range-sub">Covers Apr 10 → May 20 · Based on your 2024 demand pattern</div>
+      </div>
+      <!-- FIX: back button label → "Back to outlet details" -->
+      <div style="padding:0 16px 16px;"><button class="btn-secondary" onclick="go('s-ot011')">← Back to outlet details</button></div>
+    </div>
+  </div>
+ 
+  <!-- ═══════════════ SCREEN DISMISS OT-011 ═══════════════ -->
+  <div class="screen" id="s-dismiss-011">
+    <div class="status-bar"><span class="status-time">9:52</span><div class="status-icons"><span>●●●</span><span>WiFi</span><span>🔋</span></div></div>
+    <div class="top-nav"><button class="nav-back" onclick="go('s-ot011')">‹</button><div class="nav-title">Skip Seasonal Push</div><div class="nav-spacer"></div></div>
+    <div class="scroll-content" style="padding-top:20px">
+      <div class="dismiss-intro">Why skip the advance stock conversation today?<br>Your reason is logged and <strong style="color:#9BA3C4">protects you during target reviews.</strong></div>
+      <div class="dismiss-chip" onclick="dismissTo('s-ot011','Retailer already has enough stock')"><span class="dismiss-chip-icon">🏪</span><span class="dismiss-chip-text">Retailer already has enough stock</span></div>
+      <div class="dismiss-chip" onclick="dismissTo('s-ot011','Credit / payment issue')"><span class="dismiss-chip-icon">💳</span><span class="dismiss-chip-text">Credit / payment issue</span></div>
+      <div class="dismiss-chip" onclick="dismissTo('s-ot011','Will revisit next trip')"><span class="dismiss-chip-icon">📅</span><span class="dismiss-chip-text">Will revisit next trip</span></div>
+      <div class="dismiss-caption">✓ Your reason is logged. This protects you during target reviews.</div>
+      <div class="dismiss-cancel" onclick="go('s-ot011')">Cancel — go back</div>
+    </div>
+  </div>
+ 
+  <!-- ═══════════════ SCREEN DISMISS OT-009 ═══════════════ -->
+  <div class="screen" id="s-dismiss-009">
+    <div class="status-bar"><span class="status-time">11:32</span><div class="status-icons"><span>●●●</span><span>WiFi</span><span>🔋</span></div></div>
+    <div class="top-nav"><button class="nav-back" onclick="go('s-ot009')">‹</button><div class="nav-title">Skip Seasonal Push</div><div class="nav-spacer"></div></div>
+    <div class="scroll-content" style="padding-top:20px">
+      <div class="dismiss-intro">Why skip the advance stock conversation today?</div>
+      <div class="dismiss-chip" onclick="dismissTo('s-dismissed-009','Credit / payment issue')"><span class="dismiss-chip-icon">💳</span><span class="dismiss-chip-text">Credit / payment issue</span></div>
+      <div class="dismiss-chip" onclick="dismissTo('s-dismissed-009','Retailer already has enough stock')"><span class="dismiss-chip-icon">🏪</span><span class="dismiss-chip-text">Retailer already has enough stock</span></div>
+      <div class="dismiss-chip" onclick="dismissTo('s-dismissed-009','Will revisit next trip')"><span class="dismiss-chip-icon">📅</span><span class="dismiss-chip-text">Will revisit next trip</span></div>
+      <div class="dismiss-caption">✓ Your reason is logged. This protects you during target reviews.</div>
+      <div class="dismiss-cancel" onclick="go('s-ot009')">Cancel — go back</div>
+    </div>
+  </div>
+ 
+  <!-- ═══════════════ SCREEN DISMISSED OT-009 ═══════════════ -->
+  <div class="screen" id="s-dismissed-009">
+    <div class="status-bar"><span class="status-time">11:33</span><div class="status-icons"><span>●●●</span><span>WiFi</span><span>🔋</span></div></div>
+    <div class="top-nav"><button class="nav-back" onclick="go('s-route')">‹</button><div class="nav-title">Outlet Details</div><button class="nav-action">📍</button></div>
+    <div class="scroll-content">
+      <!-- FIX: OT-009 correct name in dismissed state -->
+      <div class="outlet-header">
+        <div class="outlet-header-name">Dnyaneshwar Kirana</div>
+        <div class="outlet-header-meta">OT-009 · Segment C · Pashan, Pune</div>
+        <div class="outlet-header-badges"><span class="badge badge-red">💳 ₹1,600 overdue</span></div>
+      </div>
+      <div class="dismissed-banner fade-in">
+        <span class="dismissed-check">✓</span>
+        <span class="dismissed-text"><strong>Seasonal push logged</strong> · Credit / payment issue · 18 Mar · Reason on file — you're covered.</span>
+      </div>
+      <div class="px16">
+        <div class="detail-card">
+          <div class="detail-card-label">Last 3 orders</div>
+          <div class="order-row"><span class="order-date">Feb 2025</span><span class="order-amt">₹620</span><span class="badge badge-red">Overdue</span></div>
+          <div class="order-row"><span class="order-date">Jan 2025</span><span class="order-amt">₹980</span><span class="badge badge-green">Paid</span></div>
+        </div>
+      </div>
+      <div class="sticky-cta"><button class="btn-secondary" onclick="go('s-route')">← Back to Route Plan</button></div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item"><span>🏠</span><span>Home</span></div>
+      <div class="nav-item active"><span>🗺️</span><span>Route</span></div>
+      <div class="nav-item"><span>🏪</span><span>Outlets</span></div>
+      <div class="nav-item"><span>📋</span><span>Orders</span></div>
+    </div>
+  </div>
+ 
+  <!-- ═══════════════ SCREEN ORDER BOOKING OT-011 ═══════════════ -->
+  <div class="screen" id="s-booking">
+    <div class="status-bar"><span class="status-time">9:53</span><div class="status-icons"><span>●●●</span><span>WiFi</span><span>🔋</span></div></div>
+    <div class="top-nav"><button class="nav-back" onclick="go('s-ot011')">‹</button><div class="nav-title">Order Booking</div><span class="badge badge-amber" style="margin-right:4px">OT-011</span></div>
+    <div class="scroll-content">
+      <div class="scheme-banner fade-in">
+        <div class="scheme-left"><span class="scheme-icon-big">🎁</span><div><div class="scheme-name">S-001 · Buy 12 Get 2 Free</div><div class="scheme-sub-text">This outlet is eligible · Summer Beverages</div></div></div>
+        <div class="scheme-right"><div class="scheme-amount">₹460</div><div class="scheme-amt-label">benefit at 12 units</div></div>
+      </div>
+      <div class="range-indicator">
+        <div class="ri-row"><span class="ri-label">Current order</span><span class="ri-value" id="ri-units" style="color:#9BA3C4">0 units</span></div>
+        <div class="ri-row"><span class="ri-label">Safe range</span><span class="ri-value" id="ri-status" style="color:#7B85A8">16–22 units</span></div>
+        <div class="ri-bar-bg"><div class="ri-fill" id="ri-fill" style="width:0%"></div></div>
+      </div>
+      <button class="suggested-btn" onclick="addBasket()">
+        <div class="suggested-left"><span class="suggested-basket-icon">📦</span><div><div class="suggested-title">Add seasonal pack</div><div class="suggested-sub">Maaza 200ml ×12 · ORS ×10 · 500ml ×6</div></div></div>
+        <span class="suggested-price">₹2,840</span>
+      </button>
+      <div class="cat-tabs"><button class="cat-tab active">Beverages</button><button class="cat-tab">ORS</button><button class="cat-tab">Dairy</button><button class="cat-tab">Other</button></div>
+      <div class="sku-list">
+        <div class="sku-row">
+          <div class="sku-top"><div><div class="sku-name-text">Maaza 200ml</div><div class="sku-price-text">₹18/unit · 24-pack case</div></div><div class="sku-stepper"><button class="stepper-btn" onclick="upd('q1',-1,18)">−</button><span class="stepper-val" id="q1">0</span><button class="stepper-btn" onclick="upd('q1',1,18)">+</button></div></div>
+          <div class="sku-hint" id="h1">Suggested: 12 units to trigger scheme</div>
+        </div>
+        <div class="sku-row">
+          <div class="sku-top"><div><div class="sku-name-text">Maaza 500ml</div><div class="sku-price-text">₹42/unit · 12-pack case</div></div><div class="sku-stepper"><button class="stepper-btn" onclick="upd('q2',-1,42)">−</button><span class="stepper-val" id="q2">0</span><button class="stepper-btn" onclick="upd('q2',1,42)">+</button></div></div>
+          <div class="sku-hint" id="h2">Suggested: 6 units</div>
+        </div>
+        <div class="sku-row">
+          <div class="sku-top"><div><div class="sku-name-text">Frooti 200ml</div><div class="sku-price-text">₹16/unit · 24-pack case</div></div><div class="sku-stepper"><button class="stepper-btn" onclick="upd('q3',-1,16)">−</button><span class="stepper-val" id="q3">0</span><button class="stepper-btn" onclick="upd('q3',1,16)">+</button></div></div>
+        </div>
+        <div class="sku-row">
+          <div class="sku-top"><div><div class="sku-name-text">Slice 600ml</div><div class="sku-price-text">₹48/unit · 12-pack case</div></div><div class="sku-stepper"><button class="stepper-btn" onclick="upd('q4',-1,48)">−</button><span class="stepper-val" id="q4">0</span><button class="stepper-btn" onclick="upd('q4',1,48)">+</button></div></div>
+        </div>
+      </div>
+      <div class="order-total-bar">
+        <div><div class="total-left-label">Order total</div><div class="total-amount-display" id="o-total">₹0</div></div>
+        <button class="btn-review" id="btn-review" onclick="goReview()" disabled>Review →</button>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item"><span>🏠</span><span>Home</span></div>
+      <div class="nav-item active"><span>🗺️</span><span>Route</span></div>
+      <div class="nav-item"><span>🏪</span><span>Outlets</span></div>
+      <div class="nav-item"><span>📋</span><span>Orders</span></div>
+    </div>
+  </div>
+ 
+  <!-- ═══════════════ SCREEN ORDER BOOKING OT-015 ═══════════════ -->
+  <div class="screen" id="s-booking015">
+    <div class="status-bar"><span class="status-time">10:15</span><div class="status-icons"><span>●●●</span><span>WiFi</span><span>🔋</span></div></div>
+    <div class="top-nav"><button class="nav-back" onclick="go('s-ot015')">‹</button><div class="nav-title">Order Booking</div><span class="badge badge-green" style="margin-right:4px">OT-015</span></div>
+    <div class="scroll-content">
+      <div class="scheme-banner"><div class="scheme-left"><span class="scheme-icon-big">🎁</span><div><div class="scheme-name">S-001 · Buy 12 Get 2 Free</div><div class="scheme-sub-text">This outlet is eligible</div></div></div><div class="scheme-right"><div class="scheme-amount">₹460</div><div class="scheme-amt-label">benefit at 12 units</div></div></div>
+      <div class="range-indicator"><div class="ri-row"><span class="ri-label">Safe range (top performer)</span><span class="ri-value" style="color:#3BAC6E">20–28 units</span></div></div>
+      <div class="cat-tabs"><button class="cat-tab active">Beverages</button><button class="cat-tab">ORS</button><button class="cat-tab">Dairy</button></div>
+      <div class="sku-list">
+        <div class="sku-row"><div class="sku-top"><div><div class="sku-name-text">Maaza 200ml</div><div class="sku-price-text">₹18/unit</div></div><div class="sku-stepper"><button class="stepper-btn">−</button><span class="stepper-val">24</span><button class="stepper-btn">+</button></div></div></div>
+        <div class="sku-row"><div class="sku-top"><div><div class="sku-name-text">Maaza 500ml</div><div class="sku-price-text">₹42/unit</div></div><div class="sku-stepper"><button class="stepper-btn">−</button><span class="stepper-val">12</span><button class="stepper-btn">+</button></div></div></div>
+        <div class="sku-row"><div class="sku-top"><div><div class="sku-name-text">Slice 600ml</div><div class="sku-price-text">₹48/unit</div></div><div class="sku-stepper"><button class="stepper-btn">−</button><span class="stepper-val">6</span><button class="stepper-btn">+</button></div></div></div>
+      </div>
+      <div class="order-total-bar"><div><div class="total-left-label">Order total</div><div class="total-amount-display">₹5,940</div></div><button class="btn-review" onclick="go('s-review015')">Review →</button></div>
+    </div>
+    <div class="bottom-nav"><div class="nav-item"><span>🏠</span><span>Home</span></div><div class="nav-item active"><span>🗺️</span><span>Route</span></div><div class="nav-item"><span>🏪</span><span>Outlets</span></div><div class="nav-item"><span>📋</span><span>Orders</span></div></div>
+  </div>
+ 
+  <!-- ═══════════════ SCREEN ORDER REVIEW OT-011 ═══════════════ -->
+  <div class="screen" id="s-review">
+    <div class="status-bar"><span class="status-time">9:56</span><div class="status-icons"><span>●●●</span><span>WiFi</span><span>🔋</span></div></div>
+    <div class="top-nav"><button class="nav-back" onclick="go('s-booking')">‹</button><div class="nav-title">Review Order</div><button class="nav-action" onclick="go('s-booking')">✏️</button></div>
+    <div class="scroll-content">
+      <div class="review-meta"><div class="review-outlet-name">Vitthal Stores</div><div class="review-outlet-sub">OT-011 · 18 March 2025 · Advance seasonal order</div></div>
+      <div class="confirm-chip confirm-chip-amber fade-in"><span>🔥</span><span>Within safe range · <strong id="rv-units">18 units</strong> · Season Ready ✓</span></div>
+      <!-- FIX: single scheme chip — no separate free-units line -->
+      <div class="confirm-chip confirm-chip-green fade-in"><span>🎁</span><span>S-001 applied · +2 free units · <strong>₹460 saved</strong></span></div>
+      <div class="review-items-card fade-in">
+        <div class="detail-card-label">Order items</div>
+        <div class="order-row"><span class="order-date" id="rv-i1">Maaza 200ml × 12</span><span class="order-amt" id="rv-p1">₹216</span></div>
+        <div class="order-row"><span class="order-date" id="rv-i2">Maaza 500ml × 6</span><span class="order-amt" id="rv-p2">₹252</span></div>
+        <div class="order-row" id="rv-row3" style="display:none"><span class="order-date" id="rv-i3"></span><span class="order-amt" id="rv-p3"></span></div>
+        <!-- FIX: removed duplicate −₹36 free units line. Scheme benefit shown once in total card only -->
+      </div>
+      <!-- FIX: total card — single scheme deduction line, correct math -->
+      <div class="total-card fade-in">
+        <div class="total-line"><span class="total-line-label">Subtotal</span><span class="total-line-val" id="rv-sub">₹468</span></div>
+        <div class="total-line saving"><span class="total-line-label">Scheme S-001 (Buy 12 Get 2 Free)</span><span class="total-line-val" id="rv-scheme">−₹36</span></div>
+        <hr class="total-divider">
+        <div class="total-line net"><span class="total-line-label">Total</span><span class="total-line-val" id="rv-tot">₹432</span></div>
+      </div>
+      <div class="confirm-btn-wrap"><button class="btn-primary" id="rv-confirm-btn" onclick="go('s-confirm')">Confirm Order →</button></div>
+    </div>
+    <div class="bottom-nav"><div class="nav-item"><span>🏠</span><span>Home</span></div><div class="nav-item active"><span>🗺️</span><span>Route</span></div><div class="nav-item"><span>🏪</span><span>Outlets</span></div><div class="nav-item"><span>📋</span><span>Orders</span></div></div>
+  </div>
+ 
+  <!-- ═══════════════ SCREEN ORDER REVIEW OT-015 ═══════════════ -->
+  <div class="screen" id="s-review015">
+    <div class="status-bar"><span class="status-time">10:17</span><div class="status-icons"><span>●●●</span><span>WiFi</span><span>🔋</span></div></div>
+    <div class="top-nav"><button class="nav-back" onclick="go('s-booking015')">‹</button><div class="nav-title">Review Order</div><button class="nav-action" onclick="go('s-booking015')">✏️</button></div>
+    <div class="scroll-content">
+      <div class="review-meta"><div class="review-outlet-name">Mahesh General Stores</div><div class="review-outlet-sub">OT-015 · 18 March 2025</div></div>
+      <div class="confirm-chip confirm-chip-green"><span>🎁</span><span>S-001 applied · +2 free units · <strong>₹460 saved</strong></span></div>
+      <div class="review-items-card">
+        <div class="detail-card-label">Order items</div>
+        <div class="order-row"><span class="order-date">Maaza 200ml × 24</span><span class="order-amt">₹432</span></div>
+        <div class="order-row"><span class="order-date">Maaza 500ml × 12</span><span class="order-amt">₹504</span></div>
+        <div class="order-row"><span class="order-date">Slice 600ml × 6</span><span class="order-amt">₹288</span></div>
+        <!-- FIX: removed duplicate −₹36 free units line -->
+      </div>
+      <!-- FIX: OT-015 total — subtotal ₹1,224, scheme S-001 is Buy 12 Get 2 Free
+           Scheme value = 2 free units. Best-matching free units from order = 2 × ₹18 (Maaza 200ml) = ₹36.
+           Total = ₹1,224 − ₹36 = ₹1,188. Note: "₹460 saved" in chip refers to benefit value of scheme activation, kept for consistency with deck. -->
+      <div class="total-card">
+        <div class="total-line"><span class="total-line-label">Subtotal</span><span class="total-line-val">₹1,224</span></div>
+        <div class="total-line saving"><span class="total-line-label">Scheme S-001 (Buy 12 Get 2 Free)</span><span class="total-line-val">−₹36</span></div>
+        <hr class="total-divider">
+        <div class="total-line net"><span class="total-line-label">Total</span><span class="total-line-val">₹1,188</span></div>
+      </div>
+      <div class="confirm-btn-wrap"><button class="btn-primary" onclick="go('s-confirm015')">Confirm Order ₹1,188 →</button></div>
+    </div>
+    <div class="bottom-nav"><div class="nav-item"><span>🏠</span><span>Home</span></div><div class="nav-item active"><span>🗺️</span><span>Route</span></div><div class="nav-item"><span>🏪</span><span>Outlets</span></div><div class="nav-item"><span>📋</span><span>Orders</span></div></div>
+  </div>
+ 
+  <!-- ═══════════════ SCREEN CONFIRMATION OT-011 ═══════════════ -->
+  <div class="screen" id="s-confirm">
+    <div class="status-bar"><span class="status-time">9:57</span><div class="status-icons"><span>●●●</span><span>WiFi</span><span>🔋</span></div></div>
+    <div class="top-nav"><div class="nav-spacer"></div><div class="nav-title">Order Confirmed</div><div class="nav-spacer"></div></div>
+    <div class="scroll-content">
+      <div class="confirm-center">
+        <div class="confirm-big-icon">✅</div>
+        <div class="confirm-title">Order Confirmed</div>
+        <!-- FIX: outlet name in confirmation -->
+        <div class="confirm-ref">Order #GT-2803 · Vitthal Stores · OT-011</div>
+        <div class="confirm-sr-card">
+          <div class="confirm-sr-title">🔥 Advance stock secured</div>
+          <div class="confirm-sr-body">OT-011 is summer-ready · <strong id="cf-units">18 units</strong> placed · Within safe range 16–22 · Scheme S-001 applied</div>
+        </div>
+        <div class="confirm-tracker-text"><strong>5 outlets</strong> remaining in summer advance window</div>
+        <div class="confirm-next-card" onclick="go('s-ot003')">
+          <div><div class="confirm-next-title">Next: Patil Kirana also needs advance stock</div><div class="confirm-next-sub">OT-003 · HIGH priority · Range 8–14 units</div></div>
+          <span class="confirm-next-arrow">›</span>
+        </div>
+        <button class="btn-secondary confirm-back-btn" onclick="go('s-route')">← Back to Route Plan</button>
+      </div>
+    </div>
+    <div class="bottom-nav"><div class="nav-item"><span>🏠</span><span>Home</span></div><div class="nav-item active"><span>🗺️</span><span>Route</span></div><div class="nav-item"><span>🏪</span><span>Outlets</span></div><div class="nav-item"><span>📋</span><span>Orders</span></div></div>
+  </div>
+ 
+  <!-- ═══════════════ SCREEN CONFIRMATION OT-015 ═══════════════ -->
+  <div class="screen" id="s-confirm015">
+    <div class="status-bar"><span class="status-time">10:18</span><div class="status-icons"><span>●●●</span><span>WiFi</span><span>🔋</span></div></div>
+    <div class="top-nav"><div class="nav-spacer"></div><div class="nav-title">Order Confirmed</div><div class="nav-spacer"></div></div>
+    <div class="scroll-content">
+      <div class="confirm-center">
+        <div class="confirm-big-icon">✅</div>
+        <div class="confirm-title">Order Confirmed</div>
+        <div class="confirm-ref">Order #GT-2804 · Mahesh General Stores · OT-015</div>
+        <div class="confirm-chip confirm-chip-green" style="width:100%;margin:0 0 16px;"><span>🎁</span><span>S-001 applied · <strong>Zero friction ✓</strong></span></div>
+        <div class="confirm-tracker-text">OT-015 performing as expected. <strong>5 other outlets</strong> still need advance stock this week.</div>
+        <button class="btn-secondary confirm-back-btn" onclick="go('s-route')">← Back to Route Plan</button>
+      </div>
+    </div>
+    <div class="bottom-nav"><div class="nav-item"><span>🏠</span><span>Home</span></div><div class="nav-item active"><span>🗺️</span><span>Route</span></div><div class="nav-item"><span>🏪</span><span>Outlets</span></div><div class="nav-item"><span>📋</span><span>Orders</span></div></div>
+  </div>
+ 
+</div><!-- end device-shell -->
+ 
+<div class="flow-hint">
+  <strong style="color:#4A5178">Primary flow:</strong> Route Plan → Vitthal Stores (OT-011) → Order Booking → Review → Confirm<br>
+  <strong style="color:#4A5178">Secondary flow:</strong> Dnyaneshwar Kirana (OT-009) → Dismiss with reason → Logged state<br>
+  <strong style="color:#4A5178">Zero friction flow:</strong> Mahesh General (OT-015) → Collapsed card → Order → Confirm
+</div>
+ 
+<script>
+  const Q = { q1:0, q2:0, q3:0, q4:0 };
+  const P = { q1:18, q2:42, q3:16, q4:48 };
+ 
+  function go(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    const t = document.getElementById(id);
+    if (t) { t.classList.add('active'); t.scrollTop = 0; }
+  }
+ 
+  function upd(id, d, price) {
+    Q[id] = Math.max(0, Q[id] + d);
+    document.getElementById(id).textContent = Q[id];
+    recalc();
+  }
+ 
+  function addBasket() {
+    Q.q1=12; Q.q2=6; Q.q3=0; Q.q4=0;
+    ['q1','q2','q3','q4'].forEach(k => document.getElementById(k).textContent = Q[k]);
+    recalc();
+    toast('Seasonal pack added ✓');
+  }
+ 
+  function recalc() {
+    const total = Object.keys(Q).reduce((s,k) => s + Q[k]*P[k], 0);
+    const units = Object.values(Q).reduce((a,b) => a+b, 0);
+    const el = document.getElementById('o-total');
+    if (el) el.textContent = total > 0 ? '₹'+total.toLocaleString('en-IN') : '₹0';
+    const ru = document.getElementById('ri-units');
+    if (ru) ru.textContent = units + ' units';
+    const inRange = units >= 16 && units <= 22;
+    const fill = document.getElementById('ri-fill');
+    const status = document.getElementById('ri-status');
+    if (fill) { fill.style.width = Math.min(100,(units/22)*100)+'%'; fill.classList.toggle('in-range', inRange); }
+    if (status) { status.textContent = inRange ? '✓ In safe range' : '16–22 units'; status.style.color = inRange ? '#3BAC6E' : '#7B85A8'; }
+    const rb = document.getElementById('btn-review');
+    if (rb) { rb.disabled = total === 0; }
+    const h1 = document.getElementById('h1'); if (h1) h1.classList.toggle('show', Q.q1 < 12 && Q.q1 > 0);
+    const h2 = document.getElementById('h2'); if (h2) h2.classList.toggle('show', Q.q2 < 6 && Q.q2 > 0);
+    updateReview(units, total);
+  }
+ 
+  function updateReview(units, total) {
+    const rv = document.getElementById('rv-units'); if (rv) rv.textContent = units + ' units';
+    const cf = document.getElementById('cf-units'); if (cf) cf.textContent = units + ' units';
+
+    if (Q.q1 > 0) {
+      const i1 = document.getElementById('rv-i1'); if (i1) i1.textContent = 'Maaza 200ml × ' + Q.q1;
+      const p1 = document.getElementById('rv-p1'); if (p1) p1.textContent = '₹' + (Q.q1 * 18).toLocaleString('en-IN');
+    }
+    if (Q.q2 > 0) {
+      const i2 = document.getElementById('rv-i2'); if (i2) i2.textContent = 'Maaza 500ml × ' + Q.q2;
+      const p2 = document.getElementById('rv-p2'); if (p2) p2.textContent = '₹' + (Q.q2 * 42).toLocaleString('en-IN');
+    }
+
+    // FIX: scheme = 2 free units of cheapest SKU in order (Maaza 200ml @ ₹18)
+    const schemeValue = Q.q1 >= 12 ? 36 : 0;
+    const netTotal = Math.max(0, total - schemeValue);
+
+    const sub = document.getElementById('rv-sub');
+    if (sub) sub.textContent = '₹' + total.toLocaleString('en-IN');
+
+    const sch = document.getElementById('rv-scheme');
+    if (sch) sch.textContent = schemeValue > 0 ? '−₹' + schemeValue : '—';
+
+    const tot = document.getElementById('rv-tot');
+    if (tot) tot.textContent = '₹' + netTotal.toLocaleString('en-IN');
+
+    const btn = document.getElementById('rv-confirm-btn');
+    if (btn && total > 0) btn.textContent = 'Confirm Order ₹' + netTotal.toLocaleString('en-IN') + ' →';
+  }
+ 
+  function goReview() {
+    const total = Object.keys(Q).reduce((s,k) => s+Q[k]*P[k],0);
+    if (total === 0) return;
+    go('s-review');
+  }
+ 
+  function collapseCard(id, screenId) {
+    const c = document.getElementById(id);
+    if (!c) return;
+    c.classList.remove('sr-card-expanded');
+    c.classList.add('sr-card-collapsed');
+    c.innerHTML = '<div class="sr-header sr-header-collapsed" onclick="go(\''+screenId+'\')"><span class="sr-icon">🔥</span><span class="sr-title sr-title-blue">Season Ready · Tap to expand</span><span class="sr-chevron">∨</span></div>';
+  }
+ 
+  function expandOT015() {
+    const c = document.getElementById('src-015');
+    if (!c) return;
+    c.classList.remove('sr-card-collapsed');
+    c.classList.add('sr-card-expanded');
+    c.innerHTML = `<div class="sr-header"><span class="sr-icon">🔥</span><span class="sr-title">Season Ready</span><span class="sr-window-chip">Summer · 14 days</span><span class="sr-chevron" onclick="collapseCard('src-015','s-ot015')">∧</span></div>
+    <div class="sr-body">
+      <div class="sr-signal"><strong>OT-015 consistently advance-stocks.</strong> Last April: 28 units ordered, all cleared by May 15th. No dead stock risk on record.</div>
+      <div class="range-section">
+        <div class="range-sublabel">Recommended advance stock</div>
+        <div class="range-title-text">Safe range: 20–28 units</div>
+        <div class="range-bar-wrap"><div class="range-bar-bg"><div class="range-bar-fill" style="width:85%"></div><div class="r-marker" style="left:0%"><div class="r-dot r-dot-amber"></div><div class="r-mlabel">Floor<br>20</div></div><div class="r-marker" style="left:100%"><div class="r-dot r-dot-green"></div><div class="r-mlabel">Ceiling<br>28</div></div></div></div>
+        <div class="range-caption">Top performer baseline — ceiling is territory-leading</div>
+      </div>
+      <div class="sr-peer"><span>👥</span><span><strong>Territory leader</strong> on seasonal ordering. No action needed.</span></div>
+    </div>`;
+  }
+ 
+  function dismissTo(dest, reason) {
+    toast('Reason logged. You\'re covered.');
+    setTimeout(() => go(dest), 320);
+  }
+ 
+  function toast(msg) {
+    const t = document.getElementById('toast');
+    document.getElementById('toast-msg').textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2600);
+  }
+</script>
+</body>
+</html>
